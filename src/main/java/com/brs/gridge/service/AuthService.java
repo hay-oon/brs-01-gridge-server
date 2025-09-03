@@ -61,5 +61,18 @@ public class AuthService {
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new BadCredentialsException("잘못된 비밀번호입니다");
         }
+
+        switch (user.getStatus()) {
+            case INACTIVE:
+                throw new BadCredentialsException("비활성화된 계정입니다. 이메일 인증을 완료해주세요.");
+            case BLOCKED:
+                throw new BadCredentialsException("차단된 계정입니다. 관리자에게 문의해주세요.");
+            case DELETED:
+                throw new BadCredentialsException("삭제된 계정입니다.");
+            case ACTIVE:
+                break;
+            default:
+                throw new BadCredentialsException("알 수 없는 계정 상태입니다.");
+        }
     }
 }
