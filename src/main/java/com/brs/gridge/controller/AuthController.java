@@ -45,4 +45,9 @@ public class AuthController {
 
         return ResponseEntity.ok(authResponse);
     }
+
+    @PostMapping("/logout") 
+    public ResponseEntity<Void> logout() { 
+        return ResponseEntity.ok().build(); // 로그아웃은 spring security (SecurityConfig.java)에서 처리
+    }
 }
