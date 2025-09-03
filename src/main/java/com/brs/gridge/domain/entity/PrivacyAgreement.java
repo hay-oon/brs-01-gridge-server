@@ -3,6 +3,7 @@ package com.brs.gridge.domain.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
+import lombok.Builder;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -30,6 +31,19 @@ public class PrivacyAgreement {
 
     @Column(name = "expired_at")
     private LocalDateTime expiredAt;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private PrivacyAgreement(User user, String version) {
+        this.user = user;
+        this.version = version;
+    }
+
+    public static PrivacyAgreement createAgreement(User user, String version) {
+        return PrivacyAgreement.builder()
+                .user(user)
+                .version(version)
+                .build();
+    }
 
     @PrePersist
     protected void onCreate() {
