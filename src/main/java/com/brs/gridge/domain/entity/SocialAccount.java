@@ -38,5 +38,4 @@ public class SocialAccount {
     protected void onCreate() {
         connectedAt = LocalDateTime.now();
     }
-
 }
