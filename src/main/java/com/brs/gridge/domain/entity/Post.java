@@ -1,10 +1,12 @@
 package com.brs.gridge.domain.entity;
 
+import com.brs.gridge.controller.dto.CreatePostRequest;
 import com.brs.gridge.domain.vo.PostStatus;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
+import lombok.Builder;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -25,9 +27,6 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @Column(name = "title")
-    private String title;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -53,6 +52,26 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
+    @Builder(access = AccessLevel.PRIVATE)
+    private Post(User user, String content, String placeName) {
+        this.user = user;
+        this.content = content;
+        this.placeName = placeName;
+        this.status = PostStatus.VISIBLE;
+        this.likeCount = 0;
+    }
+
+    public static Post createPost(User user, CreatePostRequest request) {
+        if (user == null) {
+            throw new IllegalArgumentException("게시글 작성자는 필수입니다");
+        }
+        return Post.builder()
+                .user(user)
+                .content(request.getContent())
+                .placeName(request.getPlaceName())
+                .build();
+    }
+    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
