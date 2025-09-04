@@ -104,6 +104,14 @@ public class User {
         PrivacyAgreement agreement = PrivacyAgreement.createAgreement(this, "1.0");
         this.privacyAgreements.add(agreement);
     }
+    
+    // 비밀번호 업데이트
+    public void updatePassword(String newPassword) {
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            throw new IllegalArgumentException("새 비밀번호는 필수입니다");
+        }
+        this.password = newPassword;
+    }
 
     @PrePersist
     protected void onCreate() {

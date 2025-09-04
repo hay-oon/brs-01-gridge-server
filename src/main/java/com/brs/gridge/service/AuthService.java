@@ -2,6 +2,8 @@ package com.brs.gridge.service;
 
 import com.brs.gridge.controller.dto.SignupRequest;
 import com.brs.gridge.controller.dto.LoginRequest;
+import com.brs.gridge.controller.dto.ResetPasswordRequest;
+import com.brs.gridge.controller.dto.ResetPasswordResponse;
 import com.brs.gridge.domain.entity.User;
 import com.brs.gridge.domain.vo.LoginType;
 import com.brs.gridge.repository.UserRepository;
@@ -74,5 +76,33 @@ public class AuthService {
             default:
                 throw new BadCredentialsException("알 수 없는 계정 상태입니다.");
         }
+    }
+
+    @Transactional
+    public ResetPasswordResponse resetPassword(String username, ResetPasswordRequest request) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다"));
+
+        // 현재 비밀번호 확인
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new BadCredentialsException("현재 비밀번호가 일치하지 않습니다");
+        }
+
+        // 새 비밀번호와 확인 비밀번호 일치 여부 확인
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+            throw new BadCredentialsException("새 비밀번호와 확인 비밀번호가 일치하지 않습니다");
+        }
+
+        // 새 비밀번호가 현재 비밀번호와 동일한지 확인
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new BadCredentialsException("새 비밀번호는 현재 비밀번호와 달라야 합니다");
+        }
+
+        // 새 비밀번호 암호화 및 저장
+        String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
+        user.updatePassword(encodedNewPassword);
+        userRepository.save(user);
+
+        return ResetPasswordResponse.of(true, "비밀번호가 성공적으로 변경되었습니다");
     }
 }
