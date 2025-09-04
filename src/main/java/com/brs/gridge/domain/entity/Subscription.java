@@ -30,6 +30,7 @@ public class Subscription {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;  
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private SubscriptionStatus status = SubscriptionStatus.ACTIVE;
 

@@ -23,6 +23,7 @@ public class Attachment {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "file_type", nullable = false)
     private FileType fileType;
 

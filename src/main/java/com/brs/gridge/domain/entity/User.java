@@ -44,19 +44,22 @@ public class User {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private UserRole role = UserRole.USER;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "login_type", nullable = false)
     private LoginType loginType;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false)  
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

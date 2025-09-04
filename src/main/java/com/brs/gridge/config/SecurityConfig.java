@@ -61,7 +61,8 @@ public class SecurityConfig {
                     "/health",
                     "/error"
                 ).permitAll()
-                .anyRequest().authenticated()
+                // .anyRequest().authenticated()
+                .anyRequest().permitAll() // TODO: 실제 운영 환경에서는 설정 변경 필요
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),UsernamePasswordAuthenticationFilter.class) // JWT 필터를 기본 필터 앞에 추가
             .build();

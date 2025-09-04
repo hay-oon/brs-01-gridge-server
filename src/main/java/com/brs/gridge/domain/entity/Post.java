@@ -31,6 +31,7 @@ public class Post {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private PostStatus status = PostStatus.VISIBLE;
 
