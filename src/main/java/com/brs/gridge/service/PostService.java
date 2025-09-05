@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.brs.gridge.domain.entity.Post;
 import com.brs.gridge.domain.entity.User;
 import com.brs.gridge.domain.entity.Attachment;
+import com.brs.gridge.domain.entity.Report;
 import com.brs.gridge.controller.dto.CreatePostRequest;
 import com.brs.gridge.controller.dto.CreatePostResponse;
 import com.brs.gridge.controller.dto.UpdatePostRequest;
@@ -16,8 +17,11 @@ import com.brs.gridge.controller.dto.UpdatePostResponse;
 import com.brs.gridge.controller.dto.DeletePostResponse;
 import com.brs.gridge.controller.dto.PagedResponse;
 import com.brs.gridge.controller.dto.PostListResponse;
+import com.brs.gridge.controller.dto.ReportPostRequest;
+import com.brs.gridge.controller.dto.ReportPostResponse;
 import com.brs.gridge.repository.PostRepository;
 import com.brs.gridge.repository.UserRepository;
+import com.brs.gridge.repository.ReportRepository;
 import com.brs.gridge.domain.vo.PostStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +38,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final ReportRepository reportRepository;
 
     @Transactional
     public CreatePostResponse createPost(String username, CreatePostRequest request) {
@@ -141,5 +146,45 @@ public class PostService {
         
         return DeletePostResponse.of(true, "게시글이 성공적으로 삭제되었습니다");
     }
+
+    // 게시글 신고 API
+    @Transactional
+    public ReportPostResponse reportPost(String username, Long postId, ReportPostRequest request) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+        
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
+        
+        // 삭제된 게시글은 신고 불가
+        if (post.getStatus() == PostStatus.DELETED) {
+            throw new IllegalArgumentException("삭제된 게시글은 신고할 수 없습니다");
+        }
+        
+        // 자신의 게시글은 신고 불가
+        if (post.getUser().getUserId().equals(user.getUserId())) {
+            throw new IllegalArgumentException("자신의 게시글은 신고할 수 없습니다");
+        }
+        
+        // 이미 신고한 게시글인지 확인
+        if (reportRepository.existsByPostAndUser(post, user)) {
+            throw new IllegalArgumentException("이미 신고한 게시글입니다");
+        }
+        
+        // 신고 생성 및 저장
+        Report report = Report.createReport(post, user, request.getReason());
+        reportRepository.save(report);
+        
+        // 신고 횟수에 따른 처리 로직
+        long reportCount = reportRepository.countByPostId(post.getPostId());
+        
+        // 신고가 3회 이상 누적되면 자동으로 숨김 처리
+        if (reportCount >= 3) {
+            post.updateStatus(PostStatus.INVISIBLE);
+            postRepository.save(post);
+            return ReportPostResponse.of(true, "신고가 접수되었습니다. 해당 게시글은 신고 누적으로 인해 숨김 처리되었습니다.");
+        }
+        
+        return ReportPostResponse.of(true, "신고가 성공적으로 접수되었습니다. 검토 후 조치하겠습니다.");
+    }
 }
-    

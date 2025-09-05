@@ -82,7 +82,6 @@ public class Post {
                 .build();
     }
     
-
     public void updateContent(String content) {
         this.content = content;
     }
@@ -100,4 +99,7 @@ public class Post {
         this.status = PostStatus.DELETED;
     }
 
+    public void updateStatus(PostStatus status) {
+        this.status = status;
+    }
 }

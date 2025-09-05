@@ -19,6 +19,8 @@ import com.brs.gridge.controller.dto.UpdatePostResponse;
 import com.brs.gridge.controller.dto.DeletePostResponse;
 import com.brs.gridge.controller.dto.PagedResponse;
 import com.brs.gridge.controller.dto.PostListResponse;
+import com.brs.gridge.controller.dto.ReportPostRequest;
+import com.brs.gridge.controller.dto.ReportPostResponse;
 import com.brs.gridge.service.PostService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -79,5 +82,15 @@ public class PostController {
             @PathVariable Long postId) {
         DeletePostResponse response = postService.deletePost(userDetails.getUsername(), postId);
         return ResponseEntity.ok(response);
+    }
+
+    // 게시글 신고 API
+    @PostMapping("/post/{postId}/report")
+    public ResponseEntity<ReportPostResponse> reportPost(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long postId,
+            @Valid @RequestBody ReportPostRequest request) {
+        ReportPostResponse response = postService.reportPost(userDetails.getUsername(), postId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
