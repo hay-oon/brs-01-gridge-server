@@ -5,6 +5,7 @@ import com.brs.gridge.domain.vo.PostStatus;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -17,6 +18,8 @@ import java.util.List;
 @Table(name = "posts")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Post {
 
     @Id
@@ -33,12 +36,14 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
+    @Builder.Default
     private PostStatus status = PostStatus.VISIBLE;
 
     @Column(name = "place_name")
     private String placeName;
 
     @Column(name = "like_count", nullable = false)
+    @Builder.Default
     private Integer likeCount = 0;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -48,19 +53,12 @@ public class Post {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Attachment> attachments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Comment> comments = new ArrayList<>();
-
-    @Builder(access = AccessLevel.PRIVATE)
-    private Post(User user, String content, String placeName) {
-        this.user = user;
-        this.content = content;
-        this.placeName = placeName;
-        this.status = PostStatus.VISIBLE;
-        this.likeCount = 0;
-    }
 
     public static Post createPost(User user, CreatePostRequest request) {
         if (user == null) {
