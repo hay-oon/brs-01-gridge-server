@@ -36,7 +36,7 @@ public class AuthController {
         
         AuthResponse authResponse = new AuthResponse(accessToken, refreshToken);
 
-        return ResponseEntity.ok(authResponse);
+        return ResponseEntity.status(201).body(authResponse);
     }
 
     @PostMapping("/login")
@@ -48,7 +48,7 @@ public class AuthController {
         
         AuthResponse authResponse = new AuthResponse(accessToken, refreshToken);
 
-        return ResponseEntity.ok(authResponse);
+        return ResponseEntity.status(201).body(authResponse);
     }
 
     @PostMapping("/logout") 
