@@ -60,6 +60,17 @@ public class Post {
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
     public static Post createPost(User user, CreatePostRequest request) {
         if (user == null) {
             throw new IllegalArgumentException("게시글 작성자는 필수입니다");
@@ -71,15 +82,22 @@ public class Post {
                 .build();
     }
     
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+
+    public void updateContent(String content) {
+        this.content = content;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    public void updatePlaceName(String placeName) {
+        this.placeName = placeName;
+    }
+
+    public void updateAttachments(List<Attachment> newAttachments) {
+        this.attachments.clear();
+        this.attachments.addAll(newAttachments);
+    }
+
+    public void delete() {
+        this.status = PostStatus.DELETED;
     }
 
 }
