@@ -47,5 +47,17 @@ public class PostService {
                 .map(PostListResponse::from)
                 .toList();
     }
+
+    @Transactional
+    public List<PostListResponse> getMyPosts(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+            
+        List<Post> posts = postRepository.findMyPosts(user.getUserId(), PostStatus.VISIBLE);
+        
+        return posts.stream()
+                .map(PostListResponse::from)
+                .toList();
+    }
 }
     

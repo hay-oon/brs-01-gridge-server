@@ -37,4 +37,11 @@ public class PostController {
         List<PostListResponse> posts = postService.getPosts(userDetails.getUsername());
         return ResponseEntity.ok(posts);
     }
+
+    // 내가 작성한 게시물 조회 API
+    @GetMapping("/my-posts")
+    public ResponseEntity<List<PostListResponse>> getMyPosts(@AuthenticationPrincipal UserDetails userDetails) {
+        List<PostListResponse> myPosts = postService.getMyPosts(userDetails.getUsername());
+        return ResponseEntity.ok(myPosts);
+    }
 }
