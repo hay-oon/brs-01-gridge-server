@@ -1,5 +1,8 @@
 package com.brs.gridge.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -7,6 +10,7 @@ import com.brs.gridge.domain.entity.Post;
 import com.brs.gridge.domain.entity.User;
 import com.brs.gridge.controller.dto.CreatePostRequest;
 import com.brs.gridge.controller.dto.CreatePostResponse;
+import com.brs.gridge.controller.dto.PagedResponse;
 import com.brs.gridge.controller.dto.PostListResponse;
 import com.brs.gridge.repository.PostRepository;
 import com.brs.gridge.repository.UserRepository;
@@ -14,8 +18,6 @@ import com.brs.gridge.domain.vo.PostStatus;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,27 +39,25 @@ public class PostService {
     }
 
     @Transactional
-    public List<PostListResponse> getPosts(String username) {
+    public PagedResponse<PostListResponse> getPosts(String username, int page, int size) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
             
-        List<Post> posts = postRepository.findPostsByFollowerAndStatus(user.getUserId(), PostStatus.VISIBLE);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findPostsByFollowerAndStatus(user.getUserId(), PostStatus.VISIBLE, pageable);
         
-        return posts.stream()
-                .map(PostListResponse::from)
-                .toList();
+        return PagedResponse.from(posts, PostListResponse::from);
     }
 
     @Transactional
-    public List<PostListResponse> getMyPosts(String username) {
+    public PagedResponse<PostListResponse> getMyPosts(String username, int page, int size) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
             
-        List<Post> posts = postRepository.findMyPosts(user.getUserId(), PostStatus.VISIBLE);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findMyPosts(user.getUserId(), PostStatus.VISIBLE, pageable);
         
-        return posts.stream()
-                .map(PostListResponse::from)
-                .toList();
+        return PagedResponse.from(posts, PostListResponse::from);
     }
 }
     
