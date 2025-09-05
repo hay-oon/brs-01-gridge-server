@@ -31,7 +31,7 @@ public class Post {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, length = 2200)
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -39,7 +39,7 @@ public class Post {
     @Builder.Default
     private PostStatus status = PostStatus.VISIBLE;
 
-    @Column(name = "place_name")
+    @Column(name = "place_name", length = 100)
     private String placeName;
 
     @Column(name = "like_count", nullable = false)

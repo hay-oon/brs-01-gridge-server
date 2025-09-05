@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.brs.gridge.domain.entity.Post;
 import com.brs.gridge.domain.entity.User;
+import com.brs.gridge.domain.entity.Attachment;
 import com.brs.gridge.controller.dto.CreatePostRequest;
 import com.brs.gridge.controller.dto.CreatePostResponse;
 import com.brs.gridge.controller.dto.PagedResponse;
@@ -32,6 +33,14 @@ public class PostService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         Post post = Post.createPost(user, request);
+        
+        // 첨부파일 처리
+        if (request.getAttachmentUrls() != null && !request.getAttachmentUrls().isEmpty()) {
+            for (String fileUrl : request.getAttachmentUrls()) {
+                Attachment attachment = Attachment.createAttachment(post, fileUrl);
+                post.getAttachments().add(attachment);
+            }
+        }
         
         postRepository.save(post);
 
