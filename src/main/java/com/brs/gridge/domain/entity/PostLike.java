@@ -5,12 +5,16 @@ import java.time.LocalDateTime;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.AccessLevel;
 
 @Entity
 @Table(name = "post_likes")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class PostLike {
 
     @Id

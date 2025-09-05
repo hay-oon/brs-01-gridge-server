@@ -10,6 +10,8 @@ import com.brs.gridge.domain.entity.Post;
 import com.brs.gridge.domain.entity.User;
 import com.brs.gridge.domain.entity.Attachment;
 import com.brs.gridge.domain.entity.Report;
+import com.brs.gridge.domain.entity.PostLike;
+import com.brs.gridge.domain.entity.PostBookmark;
 import com.brs.gridge.controller.dto.CreatePostRequest;
 import com.brs.gridge.controller.dto.CreatePostResponse;
 import com.brs.gridge.controller.dto.UpdatePostRequest;
@@ -19,9 +21,15 @@ import com.brs.gridge.controller.dto.PagedResponse;
 import com.brs.gridge.controller.dto.PostListResponse;
 import com.brs.gridge.controller.dto.ReportPostRequest;
 import com.brs.gridge.controller.dto.ReportPostResponse;
+import com.brs.gridge.controller.dto.LikePostRequest;
+import com.brs.gridge.controller.dto.LikePostResponse;
+import com.brs.gridge.controller.dto.BookmarkPostRequest;
+import com.brs.gridge.controller.dto.BookmarkPostResponse;
 import com.brs.gridge.repository.PostRepository;
 import com.brs.gridge.repository.UserRepository;
 import com.brs.gridge.repository.ReportRepository;
+import com.brs.gridge.repository.PostLikeRepository;
+import com.brs.gridge.repository.PostBookmarkRepository;
 import com.brs.gridge.domain.vo.PostStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -39,6 +47,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final PostBookmarkRepository postBookmarkRepository;
 
     @Transactional
     public CreatePostResponse createPost(String username, CreatePostRequest request) {
@@ -186,5 +196,106 @@ public class PostService {
         }
         
         return ReportPostResponse.of(true, "신고가 성공적으로 접수되었습니다. 검토 후 조치하겠습니다.");
+    }
+
+    // 게시글 좋아요 토글 API
+    @Transactional
+    public LikePostResponse toggleLike(String username, Long postId) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+        
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
+        
+        // 삭제된 게시글은 좋아요 불가
+        if (post.getStatus() == PostStatus.DELETED) {
+            throw new IllegalArgumentException("삭제된 게시글에는 좋아요를 누를 수 없습니다");
+        }
+        
+        // 자신의 게시글은 좋아요 불가
+        if (post.getUser().getUserId().equals(user.getUserId())) {
+            throw new IllegalArgumentException("자신의 게시글에는 좋아요를 누를 수 없습니다");
+        }
+        
+        boolean isLiked = postLikeRepository.existsByUserAndPost(user, post);
+        
+        if (isLiked) {
+            // 이미 좋아요를 누른 경우 - 좋아요 취소
+            postLikeRepository.deleteByUserAndPost(user, post);
+            long likeCount = postLikeRepository.countByPostId(postId);
+            return LikePostResponse.of(true, "좋아요가 취소되었습니다", false, likeCount);
+        } else {
+            // 좋아요를 누르지 않은 경우 - 좋아요 추가
+            PostLike postLike = PostLike.builder()
+                    .user(user)
+                    .post(post)
+                    .build();
+            postLikeRepository.save(postLike);
+            long likeCount = postLikeRepository.countByPostId(postId);
+            return LikePostResponse.of(true, "좋아요가 추가되었습니다", true, likeCount);
+        }
+    }
+
+    // 게시글 북마크 토글 API
+    @Transactional
+    public BookmarkPostResponse toggleBookmark(String username, Long postId) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+        
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
+        
+        // 삭제된 게시글은 북마크 불가
+        if (post.getStatus() == PostStatus.DELETED) {
+            throw new IllegalArgumentException("삭제된 게시글은 북마크할 수 없습니다");
+        }
+        
+        boolean isBookmarked = postBookmarkRepository.existsByUserAndPost(user, post);
+        
+        if (isBookmarked) {
+            // 이미 북마크한 경우 - 북마크 취소
+            postBookmarkRepository.deleteByUserAndPost(user, post);
+            long bookmarkCount = postBookmarkRepository.countByPostId(postId);
+            return BookmarkPostResponse.of(true, "북마크가 취소되었습니다", false, bookmarkCount);
+        } else {
+            // 북마크하지 않은 경우 - 북마크 추가
+            PostBookmark postBookmark = PostBookmark.builder()
+                    .user(user)
+                    .post(post)
+                    .build();
+            postBookmarkRepository.save(postBookmark);
+            long bookmarkCount = postBookmarkRepository.countByPostId(postId);
+            return BookmarkPostResponse.of(true, "북마크가 추가되었습니다", true, bookmarkCount);
+        }
+    }
+
+    // 게시글 좋아요 상태 조회 API
+    @Transactional(readOnly = true)
+    public LikePostResponse getLikeStatus(String username, Long postId) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+        
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
+        
+        boolean isLiked = postLikeRepository.existsByUserAndPost(user, post);
+        long likeCount = postLikeRepository.countByPostId(postId);
+        
+        return LikePostResponse.of(true, "좋아요 상태를 조회했습니다", isLiked, likeCount);
+    }
+
+    // 게시글 북마크 상태 조회 API
+    @Transactional(readOnly = true)
+    public BookmarkPostResponse getBookmarkStatus(String username, Long postId) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+        
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
+        
+        boolean isBookmarked = postBookmarkRepository.existsByUserAndPost(user, post);
+        long bookmarkCount = postBookmarkRepository.countByPostId(postId);
+        
+        return BookmarkPostResponse.of(true, "북마크 상태를 조회했습니다", isBookmarked, bookmarkCount);
     }
 }

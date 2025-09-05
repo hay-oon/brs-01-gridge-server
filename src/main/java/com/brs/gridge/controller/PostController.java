@@ -21,6 +21,8 @@ import com.brs.gridge.controller.dto.PagedResponse;
 import com.brs.gridge.controller.dto.PostListResponse;
 import com.brs.gridge.controller.dto.ReportPostRequest;
 import com.brs.gridge.controller.dto.ReportPostResponse;
+import com.brs.gridge.controller.dto.LikePostResponse;
+import com.brs.gridge.controller.dto.BookmarkPostResponse;
 import com.brs.gridge.service.PostService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -92,5 +94,41 @@ public class PostController {
             @Valid @RequestBody ReportPostRequest request) {
         ReportPostResponse response = postService.reportPost(userDetails.getUsername(), postId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // 게시글 좋아요 토글 API
+    @PostMapping("/post/{postId}/like")
+    public ResponseEntity<LikePostResponse> toggleLike(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long postId) {
+        LikePostResponse response = postService.toggleLike(userDetails.getUsername(), postId);
+        return ResponseEntity.ok(response);
+    }
+
+    // 게시글 북마크 토글 API
+    @PostMapping("/post/{postId}/bookmark")
+    public ResponseEntity<BookmarkPostResponse> toggleBookmark(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long postId) {
+        BookmarkPostResponse response = postService.toggleBookmark(userDetails.getUsername(), postId);
+        return ResponseEntity.ok(response);
+    }
+
+    // 게시글 좋아요 상태 조회 API
+    @GetMapping("/post/{postId}/like")
+    public ResponseEntity<LikePostResponse> getLikeStatus(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long postId) {
+        LikePostResponse response = postService.getLikeStatus(userDetails.getUsername(), postId);
+        return ResponseEntity.ok(response);
+    }
+
+    // 게시글 북마크 상태 조회 API
+    @GetMapping("/post/{postId}/bookmark")
+    public ResponseEntity<BookmarkPostResponse> getBookmarkStatus(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long postId) {
+        BookmarkPostResponse response = postService.getBookmarkStatus(userDetails.getUsername(), postId);
+        return ResponseEntity.ok(response);
     }
 }
