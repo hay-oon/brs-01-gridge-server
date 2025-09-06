@@ -6,6 +6,7 @@ import com.brs.gridge.domain.vo.LoginType;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -19,6 +20,8 @@ import java.util.List;
 @Table(name = "users")
 @Getter 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor // @Builder 사용 시 NoArgsConstructor + AllArgsConstructor 필요
+@Builder
 public class User {
     
     @Id
@@ -44,38 +47,34 @@ public class User {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Builder.Default
     private UserStatus status = UserStatus.ACTIVE;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
+    @Builder.Default
     private UserRole role = UserRole.USER;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "login_type", nullable = false)
     private LoginType loginType;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false)  
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<SocialAccount> socialAccounts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<PrivacyAgreement> privacyAgreements = new ArrayList<>();
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private User(String username, String password, LocalDate birthday, String email, String phone, 
-                String profileImageUrl, LoginType loginType) {
-        this.username = username;
-        this.password = password;
-        this.birthday = birthday;
-        this.email = email;
-        this.phone = phone;
-        this.profileImageUrl = profileImageUrl;
-        this.loginType = loginType;
-    }
 
     // 로컬 로그인 유저 생성
     public static User createLocalUser(String username, String encodedPassword, LocalDate birthday, String email, String phone, String profileImageUrl) {

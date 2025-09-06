@@ -2,6 +2,7 @@ package com.brs.gridge.domain.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -12,6 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "privacy_agreements")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class PrivacyAgreement {
 
     @Id
@@ -31,12 +34,6 @@ public class PrivacyAgreement {
 
     @Column(name = "expired_at")
     private LocalDateTime expiredAt;
-
-    @Builder(access = AccessLevel.PRIVATE)
-    private PrivacyAgreement(User user, String version) {
-        this.user = user;
-        this.version = version;
-    }
 
     public static PrivacyAgreement createAgreement(User user, String version) {
         return PrivacyAgreement.builder()

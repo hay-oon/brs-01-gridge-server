@@ -3,6 +3,8 @@ package com.brs.gridge.domain.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "reports")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Report {
 
     @Id
@@ -35,5 +39,13 @@ public class Report {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+
+    public static Report createReport(Post post, User user, String reason) {
+        return Report.builder()
+                .post(post)
+                .user(user)
+                .reason(reason)
+                .build();
     }
 }

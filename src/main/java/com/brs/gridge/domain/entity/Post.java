@@ -1,10 +1,13 @@
 package com.brs.gridge.domain.entity;
 
+import com.brs.gridge.controller.dto.CreatePostRequest;
 import com.brs.gridge.domain.vo.PostStatus;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
+import lombok.Builder;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +18,8 @@ import java.util.List;
 @Table(name = "posts")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Post {
 
     @Id
@@ -26,19 +31,19 @@ public class Post {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, length = 2200)
     private String content;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
+    @Builder.Default
     private PostStatus status = PostStatus.VISIBLE;
 
-    @Column(name = "place_name")
+    @Column(name = "place_name", length = 100)
     private String placeName;
 
     @Column(name = "like_count", nullable = false)
+    @Builder.Default
     private Integer likeCount = 0;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -48,9 +53,11 @@ public class Post {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Attachment> attachments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
     @PrePersist
@@ -64,4 +71,35 @@ public class Post {
         updatedAt = LocalDateTime.now();
     }
 
+    public static Post createPost(User user, CreatePostRequest request) {
+        if (user == null) {
+            throw new IllegalArgumentException("게시글 작성자는 필수입니다");
+        }
+        return Post.builder()
+                .user(user)
+                .content(request.getContent())
+                .placeName(request.getPlaceName())
+                .build();
+    }
+    
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updatePlaceName(String placeName) {
+        this.placeName = placeName;
+    }
+
+    public void updateAttachments(List<Attachment> newAttachments) {
+        this.attachments.clear();
+        this.attachments.addAll(newAttachments);
+    }
+
+    public void delete() {
+        this.status = PostStatus.DELETED;
+    }
+
+    public void updateStatus(PostStatus status) {
+        this.status = status;
+    }
 }

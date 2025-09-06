@@ -28,9 +28,11 @@ public class Payment {
     @Column(name = "amount", nullable = false)
     private Long amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private PaymentStatus status = PaymentStatus.PENDING;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "method", nullable = false)
     private PaymentMethod method;
 
