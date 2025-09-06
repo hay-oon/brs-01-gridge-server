@@ -6,8 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.brs.gridge.domain.entity.Comment;
+import com.brs.gridge.domain.vo.CommentStatus;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    Page<Comment> findByPostPostId(Long postId, Pageable pageable); // Post 엔티티 기본키 필드명이 post_id이기 때문에 이렇게 작성
+    Page<Comment> findByPostPostIdAndStatus(Long postId, CommentStatus status, Pageable pageable);
 }
