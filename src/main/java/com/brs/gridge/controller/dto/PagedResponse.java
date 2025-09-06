@@ -26,8 +26,8 @@ public class PagedResponse<T> {
     private boolean hasPrevious;
  
     public static <T, R> PagedResponse<R> from(Page<T> page, Function<T, R> mapper) {
-        List<R> content = page.getContent().stream()
-                .map(mapper)
+        List<R> content = page.getContent().stream() // 현재 페이지의 List<T>를 가져옴 (예: List<Comment>)
+                .map(mapper) // 각 요소를 mapper 함수를 사용하여 R 타입으로 변환 (예: Comment -> CommentListResponse)
                 .toList();
 
         return PagedResponse.<R>builder()

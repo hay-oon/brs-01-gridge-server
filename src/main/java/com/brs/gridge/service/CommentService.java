@@ -1,5 +1,8 @@
 package com.brs.gridge.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +14,8 @@ import com.brs.gridge.repository.PostRepository;
 import com.brs.gridge.repository.CommentRepository;
 import com.brs.gridge.controller.dto.CreateCommentRequest;
 import com.brs.gridge.controller.dto.CreateCommentResponse;
+import com.brs.gridge.controller.dto.PagedResponse;
+import com.brs.gridge.controller.dto.CommentListResponse;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,15 +29,27 @@ public class CommentService {
     private final PostRepository postRepository;
 
     @Transactional
-    public CreateCommentResponse createComment(String username, CreateCommentRequest request) {
+    public CreateCommentResponse createComment(String username, Long postId, CreateCommentRequest request) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
-        Post post = postRepository.findById(request.getPostId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + request.getPostId()));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
 
         Comment comment = Comment.createComment(user, post, request.getContent());
         commentRepository.save(comment);
 
         return CreateCommentResponse.of(true, "댓글이 성공적으로 생성되었습니다");
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponse<CommentListResponse> getComments(Long postId, int page, int size) {
+        if (!postRepository.existsById(postId)) {
+            throw new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId);
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> comments = commentRepository.findByPostPostId(postId, pageable);
+
+        return PagedResponse.from(comments, CommentListResponse::from);
     }
 }
