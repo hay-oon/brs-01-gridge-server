@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "comments")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Comment {
 
     @Id
@@ -26,7 +30,7 @@ public class Comment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, length = 2200)
     private String content;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -44,5 +48,13 @@ public class Comment {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public static Comment createComment(User user, Post post, String content) {
+        return Comment.builder()
+                .user(user)
+                .post(post)
+                .content(content)
+                .build();
     }
 }
