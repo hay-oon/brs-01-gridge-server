@@ -32,17 +32,6 @@ public class PostListResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class UserInfo {
-        private Long userId;
-        private String username;
-        private String profileImageUrl;
-    }
-    
-    // TODO: 추후 상황에 따라 분리할 것   
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
     public static class AttachmentInfo {
         private Long attachmentId;
         private String fileUrl;
@@ -58,11 +47,7 @@ public class PostListResponse {
                 .likeCount(post.getLikeCount())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
-                .user(UserInfo.builder()
-                        .userId(post.getUser().getUserId())
-                        .username(post.getUser().getUsername())
-                        .profileImageUrl(post.getUser().getProfileImageUrl())
-                        .build())
+                .user(UserInfo.from(post.getUser()))
                 .attachments(post.getAttachments().stream()
                         .map(attachment -> AttachmentInfo.builder()
                                 .attachmentId(attachment.getAttachmentId())
