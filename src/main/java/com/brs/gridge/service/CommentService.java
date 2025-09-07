@@ -20,6 +20,7 @@ import com.brs.gridge.controller.dto.DeleteCommentResponse;
 import com.brs.gridge.controller.dto.PagedResponse;
 import com.brs.gridge.controller.dto.CommentListResponse;
 import com.brs.gridge.domain.vo.CommentStatus;
+import com.brs.gridge.domain.vo.PostStatus;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -39,6 +40,10 @@ public class CommentService {
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
+
+        if (post.getStatus() == PostStatus.DELETED) {
+            throw new IllegalArgumentException("삭제된 게시글입니다");
+        }
 
         Comment comment = Comment.createComment(user, post, request.getContent());
         commentRepository.save(comment);

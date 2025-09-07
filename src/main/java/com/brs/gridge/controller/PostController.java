@@ -32,17 +32,19 @@ import lombok.RequiredArgsConstructor;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.Valid;
+import org.springframework.validation.annotation.Validated;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Validated
 public class PostController {
 
     private final PostService postService;
 
     // 게시글 작성 API
     @PostMapping("/post")
-    public ResponseEntity<CreatePostResponse> createPost(@AuthenticationPrincipal UserDetails userDetails, @RequestBody CreatePostRequest request) {
+    public ResponseEntity<CreatePostResponse> createPost(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody CreatePostRequest request) {
         CreatePostResponse Response = postService.createPost(userDetails.getUsername(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(Response);
     }
@@ -72,7 +74,7 @@ public class PostController {
     public ResponseEntity<UpdatePostResponse> updatePost(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long postId,
-            @RequestBody UpdatePostRequest request) {
+            @Valid @RequestBody UpdatePostRequest request) {
         UpdatePostResponse response = postService.updatePost(userDetails.getUsername(), postId, request);
         return ResponseEntity.ok(response);
     }

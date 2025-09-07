@@ -26,9 +26,13 @@ import com.brs.gridge.controller.dto.CommentListResponse;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Min;
 
+import org.springframework.validation.annotation.Validated;
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Validated
 public class CommentController {
     
     private final CommentService commentService;
@@ -37,7 +41,7 @@ public class CommentController {
     public ResponseEntity<CreateCommentResponse> createComment(
             @AuthenticationPrincipal UserDetails userDetails, 
             @PathVariable Long postId,
-            @RequestBody CreateCommentRequest request) {
+            @Valid @RequestBody CreateCommentRequest request) {
         CreateCommentResponse response = commentService.createComment(userDetails.getUsername(), postId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);    
     }
@@ -56,7 +60,7 @@ public class CommentController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long postId,
             @PathVariable Long commentId,
-            @RequestBody UpdateCommentRequest request) {
+            @Valid @RequestBody UpdateCommentRequest request) {
         UpdateCommentResponse response = commentService.updateComment(userDetails.getUsername(), postId, commentId, request);
         return ResponseEntity.ok(response);
     }
