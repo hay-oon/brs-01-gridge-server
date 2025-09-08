@@ -29,7 +29,7 @@ public class Follow {
     @JoinColumn(name = "followee_id", nullable = false)
     private User followee;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
     @PrePersist

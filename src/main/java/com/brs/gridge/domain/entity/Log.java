@@ -34,7 +34,7 @@ public class Log {
     @Column(name = "message")
     private String message;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
     @PrePersist

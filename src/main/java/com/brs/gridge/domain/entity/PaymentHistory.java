@@ -52,7 +52,7 @@ public class PaymentHistory {
     @Column(name = "error_message")
     private String errorMessage; // 포트원 오류 메시지
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
     @PrePersist

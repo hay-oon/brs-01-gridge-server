@@ -61,10 +61,10 @@ public class User {
     @Column(name = "login_type", nullable = false)
     private LoginType loginType;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)  
+    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP")  
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

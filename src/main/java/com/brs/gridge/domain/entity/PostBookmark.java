@@ -29,7 +29,7 @@ public class PostBookmark {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
     @PrePersist

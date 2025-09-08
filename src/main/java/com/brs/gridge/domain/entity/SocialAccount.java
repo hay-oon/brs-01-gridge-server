@@ -32,7 +32,7 @@ public class SocialAccount {
     @Column(name = "provider_user_id", nullable = false)
     private String providerUserId;
 
-    @Column(name = "connected_at", nullable = false, updatable = false)
+    @Column(name = "connected_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime connectedAt;
 
     @PrePersist

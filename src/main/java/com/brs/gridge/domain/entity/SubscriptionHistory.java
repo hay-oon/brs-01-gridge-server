@@ -45,7 +45,7 @@ public class SubscriptionHistory {
     @Column(name = "reason")
     private String reason; // 상태 변경 사유 (예: "정기결제", "취소", "만료")
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
     @PrePersist
