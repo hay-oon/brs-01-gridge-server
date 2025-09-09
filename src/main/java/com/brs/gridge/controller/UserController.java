@@ -13,14 +13,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin/users")
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class UserController {
     
     private final UserService userService;
     
     // 회원 조회 API
-    @GetMapping
+    @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PagedResponse<UserListResponse>> getUsers(
             @ModelAttribute UserSearchRequest request, // 쿼리 파라미터 : 유저 아이디, 유저 이름, 회원가입 날짜, 회원 상태
@@ -33,7 +33,7 @@ public class UserController {
     }
     
     // 회원 상세 조회 API
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserInfoDetailResponse> getUserDetail(@PathVariable Long userId) {
         UserInfoDetailResponse userDetailInfo = userService.getUserDetail(userId);
@@ -42,7 +42,7 @@ public class UserController {
     }
     
     // 회원 정지 (회원 상태 변경) API
-    @PatchMapping("/{userId}/status")
+    @PatchMapping("/user/{userId}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> updateUserStatus(
             @PathVariable Long userId,
