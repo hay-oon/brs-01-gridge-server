@@ -52,6 +52,9 @@ public class AuthService {
 
         validateLocalLogin(user, request.getPassword());
 
+        user.updateLastLoginTime();
+        userRepository.save(user);
+
         return user;
     }
 
