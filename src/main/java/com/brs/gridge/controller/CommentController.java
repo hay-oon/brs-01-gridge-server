@@ -14,8 +14,7 @@ import lombok.RequiredArgsConstructor;
 import com.brs.gridge.controller.dto.CreateCommentRequest;
 import com.brs.gridge.controller.dto.CreateCommentResponse;
 import com.brs.gridge.controller.dto.UpdateCommentRequest;
-import com.brs.gridge.controller.dto.UpdateCommentResponse;
-import com.brs.gridge.controller.dto.DeleteCommentResponse;
+import com.brs.gridge.controller.dto.ApiResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -56,21 +55,21 @@ public class CommentController {
     }
 
     @PatchMapping("/post/{postId}/comment/{commentId}")
-    public ResponseEntity<UpdateCommentResponse> updateComment(
+    public ResponseEntity<ApiResponse> updateComment(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long postId,
             @PathVariable Long commentId,
             @Valid @RequestBody UpdateCommentRequest request) {
-        UpdateCommentResponse response = commentService.updateComment(userDetails.getUsername(), postId, commentId, request);
+        ApiResponse response = commentService.updateComment(userDetails.getUsername(), postId, commentId, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/post/{postId}/comment/{commentId}")
-    public ResponseEntity<DeleteCommentResponse> deleteComment(
+    public ResponseEntity<ApiResponse> deleteComment(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long postId,
             @PathVariable Long commentId) {
-        DeleteCommentResponse response = commentService.deleteComment(userDetails.getUsername(), postId, commentId);
+        ApiResponse response = commentService.deleteComment(userDetails.getUsername(), postId, commentId);
         return ResponseEntity.ok(response);
     }
 }

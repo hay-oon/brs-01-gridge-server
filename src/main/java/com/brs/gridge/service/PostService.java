@@ -13,10 +13,8 @@ import com.brs.gridge.domain.entity.Report;
 import com.brs.gridge.domain.entity.PostLike;
 import com.brs.gridge.domain.entity.PostBookmark;
 import com.brs.gridge.controller.dto.CreatePostRequest;
-import com.brs.gridge.controller.dto.CreatePostResponse;
+import com.brs.gridge.controller.dto.ApiResponse;
 import com.brs.gridge.controller.dto.UpdatePostRequest;
-import com.brs.gridge.controller.dto.UpdatePostResponse;
-import com.brs.gridge.controller.dto.DeletePostResponse;
 import com.brs.gridge.controller.dto.PagedResponse;
 import com.brs.gridge.controller.dto.PostListResponse;
 import com.brs.gridge.controller.dto.ReportPostRequest;
@@ -49,7 +47,7 @@ public class PostService {
     private final PostBookmarkRepository postBookmarkRepository;
 
     @Transactional
-    public CreatePostResponse createPost(String username, CreatePostRequest request) {
+    public ApiResponse createPost(String username, CreatePostRequest request) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         Post post = Post.createPost(user, request);
@@ -64,7 +62,7 @@ public class PostService {
         
         postRepository.save(post);
 
-        return CreatePostResponse.of(true, "게시글이 성공적으로 생성되었습니다");
+        return ApiResponse.of(true, "게시글이 성공적으로 생성되었습니다");
     }
 
     @Transactional
@@ -90,7 +88,7 @@ public class PostService {
     }
 
     @Transactional
-    public UpdatePostResponse updatePost(String username, Long postId, UpdatePostRequest request) {
+    public ApiResponse updatePost(String username, Long postId, UpdatePostRequest request) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         
@@ -127,11 +125,11 @@ public class PostService {
         
         postRepository.save(post);
         
-        return UpdatePostResponse.of(true, "게시글이 성공적으로 수정되었습니다");
+        return ApiResponse.of(true, "게시글이 성공적으로 수정되었습니다");
     }
 
     @Transactional
-    public DeletePostResponse deletePost(String username, Long postId) {
+    public ApiResponse deletePost(String username, Long postId) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         
@@ -152,7 +150,7 @@ public class PostService {
         post.delete();
         postRepository.save(post);
         
-        return DeletePostResponse.of(true, "게시글이 성공적으로 삭제되었습니다");
+        return ApiResponse.of(true, "게시글이 성공적으로 삭제되었습니다");
     }
 
     // 게시글 신고 API

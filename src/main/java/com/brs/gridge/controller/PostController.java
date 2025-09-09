@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.brs.gridge.controller.dto.CreatePostRequest;
-import com.brs.gridge.controller.dto.CreatePostResponse;
+import com.brs.gridge.controller.dto.ApiResponse;
 import com.brs.gridge.controller.dto.UpdatePostRequest;
-import com.brs.gridge.controller.dto.UpdatePostResponse;
-import com.brs.gridge.controller.dto.DeletePostResponse;
 import com.brs.gridge.controller.dto.PagedResponse;
 import com.brs.gridge.controller.dto.PostListResponse;
 import com.brs.gridge.controller.dto.ReportPostRequest;
@@ -44,8 +42,8 @@ public class PostController {
 
     // 게시글 작성 API
     @PostMapping("/post")
-    public ResponseEntity<CreatePostResponse> createPost(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody CreatePostRequest request) {
-        CreatePostResponse Response = postService.createPost(userDetails.getUsername(), request);
+    public ResponseEntity<ApiResponse> createPost(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody CreatePostRequest request) {
+        ApiResponse Response = postService.createPost(userDetails.getUsername(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(Response);
     }
 
@@ -71,20 +69,20 @@ public class PostController {
 
     // 게시글 수정 API
     @PatchMapping("/post/{postId}")
-    public ResponseEntity<UpdatePostResponse> updatePost(
+    public ResponseEntity<ApiResponse> updatePost(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long postId,
             @Valid @RequestBody UpdatePostRequest request) {
-        UpdatePostResponse response = postService.updatePost(userDetails.getUsername(), postId, request);
+        ApiResponse response = postService.updatePost(userDetails.getUsername(), postId, request);
         return ResponseEntity.ok(response);
     }
 
     // 게시글 삭제 API
     @DeleteMapping("/post/{postId}")
-    public ResponseEntity<DeletePostResponse> deletePost(
+    public ResponseEntity<ApiResponse> deletePost(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long postId) {
-        DeletePostResponse response = postService.deletePost(userDetails.getUsername(), postId);
+        ApiResponse response = postService.deletePost(userDetails.getUsername(), postId);
         return ResponseEntity.ok(response);
     }
 
