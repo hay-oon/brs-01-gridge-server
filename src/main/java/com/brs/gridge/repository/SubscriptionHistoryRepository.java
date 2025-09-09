@@ -18,5 +18,6 @@ public interface SubscriptionHistoryRepository extends JpaRepository<Subscriptio
     Optional<SubscriptionHistory> findActiveSubscriptionByUser(@Param("user") User user, @Param("currentDate") LocalDate currentDate);
     
     // 결제 히스토리 ID로 구독 히스토리 조회
-    Optional<SubscriptionHistory> findByPaymentHistoryId(Long paymentHistoryId);
+    @Query("SELECT sh FROM SubscriptionHistory sh WHERE sh.paymentHistory.paymentHistoryId = :paymentHistoryId")
+    Optional<SubscriptionHistory> findByPaymentHistoryId(@Param("paymentHistoryId") Long paymentHistoryId);
 }

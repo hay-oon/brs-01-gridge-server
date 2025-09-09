@@ -66,7 +66,7 @@ public class SubscriptionService {
             startDate,
             endDate,
             SubscriptionStatus.ACTIVE,
-            paymentHistory.getPaymentHistoryId(),
+            paymentHistory,
             "구독 결제 생성"
         );
         subscriptionHistoryRepository.save(subscriptionHistory);
