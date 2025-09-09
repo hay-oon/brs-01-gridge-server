@@ -2,6 +2,7 @@ package com.brs.gridge.controller.dto;
 
 import com.brs.gridge.domain.vo.UserStatus;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Getter
+@Setter // @ModelAttribute 사용 시 필수
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
