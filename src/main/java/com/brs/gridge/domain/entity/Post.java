@@ -1,5 +1,6 @@
 package com.brs.gridge.domain.entity;
 
+import com.brs.gridge.common.Constants;
 import com.brs.gridge.controller.dto.CreatePostRequest;
 import com.brs.gridge.domain.vo.PostStatus;
 
@@ -31,7 +32,7 @@ public class Post {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "content", nullable = false, length = 2200)
+    @Column(name = "content", nullable = false, length = Constants.DatabaseLimits.CONTENT_MAX_LENGTH)
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -39,7 +40,7 @@ public class Post {
     @Builder.Default
     private PostStatus status = PostStatus.VISIBLE;
 
-    @Column(name = "place_name", length = 100)
+    @Column(name = "place_name", length = Constants.DatabaseLimits.PLACE_NAME_MAX_LENGTH)
     private String placeName;
 
     @Column(name = "like_count", nullable = false)

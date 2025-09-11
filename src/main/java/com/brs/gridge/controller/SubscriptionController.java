@@ -1,5 +1,6 @@
 package com.brs.gridge.controller;
 
+import com.brs.gridge.common.Constants;
 import com.brs.gridge.controller.dto.*;
 import com.brs.gridge.service.SubscriptionService;
 import jakarta.validation.Valid;
@@ -52,8 +53,8 @@ public class SubscriptionController {
     @GetMapping("/admin/subscriptions")
     public ResponseEntity<PagedResponse<SubscriptionListResponse>> getSubscriptionList(
             @ModelAttribute SubscriptionSearchRequest request,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_SIZE) int size
             ) {
         
         PagedResponse<SubscriptionListResponse> response = subscriptionService.getSubscriptionList(request, page - 1, size);

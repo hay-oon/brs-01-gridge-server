@@ -1,5 +1,6 @@
 package com.brs.gridge.controller.dto;
 
+import com.brs.gridge.common.Constants;
 import java.util.List;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -13,14 +14,14 @@ import lombok.NoArgsConstructor;
 public class CreatePostRequest {
 
     @NotEmpty(message = "내용은 필수입니다")
-    @Size(max = 2200, message = "내용은 2200자를 초과할 수 없습니다")
+    @Size(max = Constants.DatabaseLimits.CONTENT_MAX_LENGTH, message = "내용은 " + Constants.DatabaseLimits.CONTENT_MAX_LENGTH + "자를 초과할 수 없습니다")
     private String content;
 
-    @Size(max = 100, message = "장소 이름은 100자를 초과할 수 없습니다")
+    @Size(max = Constants.DatabaseLimits.PLACE_NAME_MAX_LENGTH, message = "장소 이름은 " + Constants.DatabaseLimits.PLACE_NAME_MAX_LENGTH + "자를 초과할 수 없습니다")
     private String placeName;
 
     @NotEmpty(message = "첨부파일은 필수입니다")
-    @Size(min = 1, max = 10, message = "첨부파일은 1개 이상 10개 이하여야 합니다")
-    private List<@Pattern(regexp = "^https?://.*", message = "올바른 URL 형식이 아닙니다") String> attachmentUrls;
+    @Size(min = Constants.File.MIN_ATTACHMENT_COUNT, max = Constants.File.MAX_ATTACHMENT_COUNT, message = "첨부파일은 " + Constants.File.MIN_ATTACHMENT_COUNT + "개 이상 " + Constants.File.MAX_ATTACHMENT_COUNT + "개 이하여야 합니다")
+    private List<@Pattern(regexp = Constants.File.URL_PATTERN, message = "올바른 URL 형식이 아닙니다") String> attachmentUrls;
 
     }

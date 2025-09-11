@@ -1,5 +1,6 @@
 package com.brs.gridge.controller;
 
+import com.brs.gridge.common.Constants;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +29,8 @@ public class ReportController {
     @GetMapping("admin/reports")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PagedResponse<ReportListResponse>> getReports(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_SIZE) int size) {
         PagedResponse<ReportListResponse> reports = reportService.getReports(page - 1, size);
         return ResponseEntity.ok(reports);
     }

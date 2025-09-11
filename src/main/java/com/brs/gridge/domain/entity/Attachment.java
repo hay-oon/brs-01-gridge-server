@@ -1,5 +1,6 @@
 package com.brs.gridge.domain.entity;
 
+import com.brs.gridge.common.Constants;
 import com.brs.gridge.domain.vo.FileType;
 
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class Attachment {
     @Column(name = "file_type", nullable = false)
     private FileType fileType;
 
-    @Column(name = "file_url", nullable = false, length = 500)
+    @Column(name = "file_url", nullable = false, length = Constants.DatabaseLimits.FILE_URL_MAX_LENGTH)
     private String fileUrl;
 
     public static FileType determineFileType(String fileUrl) {
@@ -42,12 +43,12 @@ public class Attachment {
         String lowerUrl = fileUrl.toLowerCase();
         
         // 이미지 확장자 확인
-        if (lowerUrl.matches(".*\\.(jpg|jpeg|png|gif|bmp|webp|svg)$")) {
+        if (lowerUrl.matches(Constants.File.IMAGE_EXTENSION_PATTERN)) {
             return FileType.IMAGE;
         }
         
         // 동영상 확장자 확인
-        if (lowerUrl.matches(".*\\.(mp4|avi|mov|wmv|flv|webm|mkv|m4v)$")) {
+        if (lowerUrl.matches(Constants.File.VIDEO_EXTENSION_PATTERN)) {
             return FileType.VIDEO;
         }
         

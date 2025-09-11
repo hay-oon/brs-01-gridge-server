@@ -1,5 +1,6 @@
 package com.brs.gridge.domain.entity;
 
+import com.brs.gridge.common.Constants;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class Comment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "content", nullable = false, length = 2200)
+    @Column(name = "content", nullable = false, length = Constants.DatabaseLimits.CONTENT_MAX_LENGTH)
     private String content;
 
     @Enumerated(EnumType.STRING)

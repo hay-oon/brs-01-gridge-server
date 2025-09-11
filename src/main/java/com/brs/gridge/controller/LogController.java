@@ -1,5 +1,6 @@
 package com.brs.gridge.controller;
 
+import com.brs.gridge.common.Constants;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +25,8 @@ public class LogController {
     // 전체 로그 조회 API
     @GetMapping("/logs")
     public ResponseEntity<PagedResponse<LogListResponse>> getAllLogs(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_SIZE) int size) {
         PagedResponse<LogListResponse> logs = logService.getAllLogs(page - 1, size);
         return ResponseEntity.ok(logs);
     }
@@ -35,8 +36,8 @@ public class LogController {
     @GetMapping("/logs/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PagedResponse<LogListResponse>> getUserLogs(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_SIZE) int size) {
         PagedResponse<LogListResponse> logs = logService.getLogsByEntityType("USER", page - 1, size);
         return ResponseEntity.ok(logs);
     }
@@ -45,8 +46,8 @@ public class LogController {
     @GetMapping("/logs/posts")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PagedResponse<LogListResponse>> getPostLogs(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_SIZE) int size) {
         PagedResponse<LogListResponse> logs = logService.getLogsByEntityType("POST", page - 1, size);
         return ResponseEntity.ok(logs);
     }
@@ -55,8 +56,8 @@ public class LogController {
     @GetMapping("/logs/reports")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PagedResponse<LogListResponse>> getReportLogs(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_SIZE) int size) {
         PagedResponse<LogListResponse> logs = logService.getLogsByEntityType("REPORT", page - 1, size);
         return ResponseEntity.ok(logs);
     }
@@ -65,8 +66,8 @@ public class LogController {
     @GetMapping("/logs/comments")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PagedResponse<LogListResponse>> getCommentLogs(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_SIZE) int size) {
         PagedResponse<LogListResponse> logs = logService.getLogsByEntityType("COMMENT", page - 1, size);
         return ResponseEntity.ok(logs);
     }
@@ -75,8 +76,8 @@ public class LogController {
     @GetMapping("/logs/payments")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PagedResponse<LogListResponse>> getPaymentLogs(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_SIZE) int size) {
         PagedResponse<LogListResponse> logs = logService.getLogsByEntityType("PAYMENT", page - 1, size);
         return ResponseEntity.ok(logs);
     }

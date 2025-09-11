@@ -1,5 +1,6 @@
 package com.brs.gridge.controller;
 
+import com.brs.gridge.common.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -141,8 +142,8 @@ public class PostController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PagedResponse<PostResponse>> getPostsByAdmin(
             @ModelAttribute PostSearchRequest request, 
-            @RequestParam(defaultValue = "1") int page, 
-            @RequestParam(defaultValue = "9") int size) {
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_PAGE) int page, 
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_SIZE) int size) {
         
         PagedResponse<PostResponse> posts = postService.getPostsByAdmin(request, page - 1, size);
         return ResponseEntity.ok(posts);

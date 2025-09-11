@@ -1,5 +1,6 @@
 package com.brs.gridge.config;
 
+import com.brs.gridge.common.Constants;
 import com.brs.gridge.security.JwtAuthenticationFilter;
 import com.brs.gridge.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -102,10 +103,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*")); // TODO: 실제 운영 환경에서는 구체적인 도메인 지정 필요
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-        configuration.setExposedHeaders(List.of("Authorization"));
-        configuration.setMaxAge(3600L);
+        configuration.setAllowedMethods(Arrays.asList(Constants.Http.ALLOWED_METHODS));
+        configuration.setAllowedHeaders(Arrays.asList(Constants.Http.ALLOWED_HEADERS));
+        configuration.setExposedHeaders(Arrays.asList(Constants.Http.EXPOSED_HEADERS));
+        configuration.setMaxAge(Constants.Http.CORS_MAX_AGE);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

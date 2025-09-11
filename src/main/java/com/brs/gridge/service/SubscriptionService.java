@@ -1,5 +1,6 @@
 package com.brs.gridge.service;
 
+import com.brs.gridge.common.Constants;
 import com.brs.gridge.controller.dto.*;
 import com.brs.gridge.domain.entity.*;
 import com.brs.gridge.domain.vo.PaymentStatus;
@@ -30,7 +31,7 @@ public class SubscriptionService {
     private final UserRepository userRepository;
     private final LogService logService;
     
-    private static final Long MONTHLY_AMOUNT = 9900L; // 월 구독료
+    private static final Long MONTHLY_AMOUNT = Constants.Business.MONTHLY_SUBSCRIPTION_AMOUNT; // 월 구독료
     
     // 결제 생성
     @Transactional

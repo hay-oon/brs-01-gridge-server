@@ -1,5 +1,6 @@
 package com.brs.gridge.controller;
 
+import com.brs.gridge.common.Constants;
 import com.brs.gridge.controller.dto.ApiResponse;
 import com.brs.gridge.controller.dto.PagedResponse;
 import com.brs.gridge.controller.dto.UserInfoDetailResponse;
@@ -24,8 +25,8 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PagedResponse<UserListResponse>> getUsers(
             @ModelAttribute UserSearchRequest request, // 쿼리 파라미터 : 유저 아이디, 유저 이름, 회원가입 날짜, 회원 상태
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size) {
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = Constants.Pagination.DEFAULT_SIZE) int size) {
         
         PagedResponse<UserListResponse> users = userService.getUsers(request, page - 1, size);
         
