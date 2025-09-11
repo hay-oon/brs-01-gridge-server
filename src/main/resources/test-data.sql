@@ -205,13 +205,62 @@ INSERT INTO messages (sender_id, receiver_id, content, read_at, created_at) VALU
 
 -- 로그 데이터
 INSERT INTO logs (user_id, entity_type, entity_id, action, message, created_at) VALUES
-(1, 'POST', 1, 'CREATE', '게시물이 생성되었습니다.', NOW() - INTERVAL 2 HOUR),
-(1, 'POST', 1, 'UPDATE', '게시물이 수정되었습니다.', NOW() - INTERVAL 1 HOUR),
-(2, 'POST', 4, 'CREATE', '게시물이 생성되었습니다.', NOW() - INTERVAL 3 HOUR),
-(3, 'COMMENT', 1, 'CREATE', '댓글이 작성되었습니다.', NOW() - INTERVAL 1 HOUR),
-(4, 'LIKE', 1, 'CREATE', '좋아요를 눌렀습니다.', NOW() - INTERVAL 15 MINUTE),
-(5, 'BOOKMARK', 1, 'CREATE', '북마크에 추가했습니다.', NOW() - INTERVAL 1 HOUR),
-(6, 'REPORT', 1, 'CREATE', '게시물을 신고했습니다.', NOW() - INTERVAL 1 DAY),
-(7, 'USER', 6, 'UPDATE', '사용자 상태를 변경했습니다.', NOW() - INTERVAL 1 DAY),
-(1, 'PAYMENT', 1, 'CREATE', '결제가 완료되었습니다.', NOW() - INTERVAL 10 DAY),
-(1, 'SUBSCRIPTION', 1, 'CREATE', '구독이 시작되었습니다.', NOW() - INTERVAL 10 DAY);
+-- 회원 관리 로그 (USER)
+(1, 'USER', 1, 'CREATE', '새로운 사용자가 회원가입했습니다. 이메일: john@example.com', NOW() - INTERVAL 30 DAY),
+(2, 'USER', 2, 'CREATE', '새로운 사용자가 회원가입했습니다. 이메일: jane@example.com', NOW() - INTERVAL 25 DAY),
+(3, 'USER', 3, 'CREATE', '새로운 사용자가 회원가입했습니다. 이메일: mike@example.com', NOW() - INTERVAL 20 DAY),
+(4, 'USER', 4, 'CREATE', '새로운 사용자가 회원가입했습니다. 이메일: sarah@example.com', NOW() - INTERVAL 15 DAY),
+(5, 'USER', 5, 'CREATE', '새로운 사용자가 회원가입했습니다. 이메일: david@example.com', NOW() - INTERVAL 10 DAY),
+(1, 'USER', 1, 'READ', '사용자가 로그인했습니다.', NOW() - INTERVAL 2 HOUR),
+(2, 'USER', 2, 'READ', '사용자가 로그인했습니다.', NOW() - INTERVAL 1 HOUR),
+(3, 'USER', 3, 'READ', '사용자가 로그인했습니다.', NOW() - INTERVAL 30 MINUTE),
+(1, 'USER', 1, 'UPDATE', '사용자가 비밀번호를 변경했습니다.', NOW() - INTERVAL 5 DAY),
+(2, 'USER', 2, 'UPDATE', '사용자가 비밀번호를 변경했습니다.', NOW() - INTERVAL 3 DAY),
+
+-- 게시글 관리 로그 (POST)
+(1, 'POST', 1, 'CREATE', '새로운 게시글을 작성했습니다. 작성 내용: 오늘 날씨가 정말 좋네요!', NOW() - INTERVAL 2 HOUR),
+(2, 'POST', 2, 'CREATE', '새로운 게시글을 작성했습니다. 작성 내용: 맛있는 음식 사진 공유합니다', NOW() - INTERVAL 3 HOUR),
+(3, 'POST', 3, 'CREATE', '새로운 게시글을 작성했습니다. 작성 내용: 운동 후기 남겨봅니다', NOW() - INTERVAL 4 HOUR),
+(4, 'POST', 4, 'CREATE', '새로운 게시글을 작성했습니다. 작성 내용: 여행 계획 세우는 중이에요', NOW() - INTERVAL 5 HOUR),
+(5, 'POST', 5, 'CREATE', '새로운 게시글을 작성했습니다. 작성 내용: 책 추천해주세요!', NOW() - INTERVAL 6 HOUR),
+(1, 'POST', 1, 'UPDATE', '게시글을 수정했습니다. 게시글 ID: 1', NOW() - INTERVAL 1 HOUR),
+(2, 'POST', 2, 'UPDATE', '게시글을 수정했습니다. 게시글 ID: 2', NOW() - INTERVAL 2 HOUR),
+(1, 'POST', 1, 'DELETE', '게시글을 삭제했습니다. 게시글 ID: 1', NOW() - INTERVAL 30 MINUTE),
+(3, 'POST', 3, 'DELETE', '게시글을 삭제했습니다. 게시글 ID: 3', NOW() - INTERVAL 1 HOUR),
+
+-- 댓글 관리 로그 (COMMENT)
+(2, 'COMMENT', 1, 'CREATE', '새로운 댓글을 작성했습니다. 게시글 ID: 1', NOW() - INTERVAL 1 HOUR),
+(3, 'COMMENT', 2, 'CREATE', '새로운 댓글을 작성했습니다. 게시글 ID: 2', NOW() - INTERVAL 2 HOUR),
+(4, 'COMMENT', 3, 'CREATE', '새로운 댓글을 작성했습니다. 게시글 ID: 3', NOW() - INTERVAL 3 HOUR),
+(5, 'COMMENT', 4, 'CREATE', '새로운 댓글을 작성했습니다. 게시글 ID: 4', NOW() - INTERVAL 4 HOUR),
+(1, 'COMMENT', 5, 'CREATE', '새로운 댓글을 작성했습니다. 게시글 ID: 5', NOW() - INTERVAL 5 HOUR),
+(2, 'COMMENT', 1, 'UPDATE', '댓글을 수정했습니다. 게시글 ID: 1', NOW() - INTERVAL 30 MINUTE),
+(3, 'COMMENT', 2, 'UPDATE', '댓글을 수정했습니다. 게시글 ID: 2', NOW() - INTERVAL 1 HOUR),
+(2, 'COMMENT', 1, 'DELETE', '댓글을 삭제했습니다. 게시글 ID: 1', NOW() - INTERVAL 15 MINUTE),
+(4, 'COMMENT', 3, 'DELETE', '댓글을 삭제했습니다. 게시글 ID: 3', NOW() - INTERVAL 2 HOUR),
+
+-- 신고 관리 로그 (REPORT)
+(2, 'REPORT', 1, 'CREATE', '게시글을 신고했습니다. 게시글 ID: 1, 사유: 스팸', NOW() - INTERVAL 1 DAY),
+(3, 'REPORT', 2, 'CREATE', '게시글을 신고했습니다. 게시글 ID: 2, 사유: 부적절한 내용', NOW() - INTERVAL 2 DAY),
+(4, 'REPORT', 3, 'CREATE', '게시글을 신고했습니다. 게시글 ID: 3, 사유: 욕설', NOW() - INTERVAL 3 DAY),
+(5, 'REPORT', 4, 'CREATE', '게시글을 신고했습니다. 게시글 ID: 4, 사유: 저작권 침해', NOW() - INTERVAL 4 DAY),
+(1, 'REPORT', 5, 'CREATE', '게시글을 신고했습니다. 게시글 ID: 5, 사유: 허위 정보', NOW() - INTERVAL 5 DAY),
+(6, 'REPORT', 1, 'DELETE', '관리자가 신고를 삭제했습니다. 신고 ID: 1', NOW() - INTERVAL 12 HOUR),
+(6, 'REPORT', 2, 'DELETE', '관리자가 신고를 삭제했습니다. 신고 ID: 2', NOW() - INTERVAL 1 DAY),
+
+-- 결제 관리 로그 (PAYMENT)
+(1, 'PAYMENT', 1, 'CREATE', '구독 결제를 생성했습니다. 금액: 9900원', NOW() - INTERVAL 10 DAY),
+(2, 'PAYMENT', 2, 'CREATE', '구독 결제를 생성했습니다. 금액: 9900원', NOW() - INTERVAL 8 DAY),
+(3, 'PAYMENT', 3, 'CREATE', '구독 결제를 생성했습니다. 금액: 9900원', NOW() - INTERVAL 5 DAY),
+(4, 'PAYMENT', 4, 'CREATE', '구독 결제를 생성했습니다. 금액: 9900원', NOW() - INTERVAL 3 DAY),
+(5, 'PAYMENT', 5, 'CREATE', '구독 결제를 생성했습니다. 금액: 9900원', NOW() - INTERVAL 1 DAY),
+(1, 'PAYMENT', 6, 'CREATE', '구독 결제를 생성했습니다. 금액: 9900원', NOW() - INTERVAL 12 HOUR),
+(2, 'PAYMENT', 7, 'CREATE', '구독 결제를 생성했습니다. 금액: 9900원', NOW() - INTERVAL 6 HOUR),
+(3, 'PAYMENT', 8, 'CREATE', '구독 결제를 생성했습니다. 금액: 9900원', NOW() - INTERVAL 3 HOUR),
+
+-- 추가 다양한 로그 (최근 활동)
+(1, 'USER', 1, 'READ', '사용자가 로그인했습니다.', NOW() - INTERVAL 10 MINUTE),
+(2, 'POST', 6, 'CREATE', '새로운 게시글을 작성했습니다. 작성 내용: 오늘의 일상 공유', NOW() - INTERVAL 20 MINUTE),
+(3, 'COMMENT', 6, 'CREATE', '새로운 댓글을 작성했습니다. 게시글 ID: 6', NOW() - INTERVAL 15 MINUTE),
+(4, 'REPORT', 6, 'CREATE', '게시글을 신고했습니다. 게시글 ID: 6, 사유: 부적절한 내용', NOW() - INTERVAL 5 MINUTE),
+(5, 'PAYMENT', 9, 'CREATE', '구독 결제를 생성했습니다. 금액: 9900원', NOW() - INTERVAL 1 MINUTE);

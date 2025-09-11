@@ -32,6 +32,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final LogService logService;
 
     @Transactional
     public CreateCommentResponse createComment(String username, Long postId, CreateCommentRequest request) {
@@ -45,7 +46,10 @@ public class CommentService {
         }
 
         Comment comment = Comment.createComment(user, post, request.getContent());
-        commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+        
+        logService.logAction(username, "COMMENT", savedComment.getCommentId(), "CREATE", 
+            "새로운 댓글을 작성했습니다. 게시글 ID: " + postId);
 
         return CreateCommentResponse.of(true, "댓글이 성공적으로 생성되었습니다");
     }
@@ -84,6 +88,9 @@ public class CommentService {
 
         comment.updateContent(request.getContent());
         commentRepository.save(comment);
+        
+        logService.logAction(username, "COMMENT", commentId, "UPDATE", 
+            "댓글을 수정했습니다. 게시글 ID: " + postId);
 
         return ApiResponse.of(true, "댓글이 성공적으로 수정되었습니다");
     }
@@ -110,6 +117,9 @@ public class CommentService {
 
         comment.softDelete();
         commentRepository.save(comment);
+        
+        logService.logAction(username, "COMMENT", commentId, "DELETE", 
+            "댓글을 삭제했습니다. 게시글 ID: " + postId);
 
         return ApiResponse.of(true, "댓글이 성공적으로 삭제되었습니다");
     }

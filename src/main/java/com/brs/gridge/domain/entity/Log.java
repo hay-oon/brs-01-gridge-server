@@ -2,6 +2,8 @@ package com.brs.gridge.domain.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.AccessLevel;
 
 import jakarta.persistence.*;
@@ -10,6 +12,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "logs")
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Log {
 
@@ -41,4 +45,15 @@ public class Log {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    public static Log createLog(User user, String entityType, Long entityId, String action, String message) {
+        return Log.builder()
+                .user(user)
+                .entityType(entityType)
+                .entityId(entityId)
+                .action(action)
+                .message(message)
+                .build();
+    }
+        
 }
