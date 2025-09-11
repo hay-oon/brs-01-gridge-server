@@ -46,6 +46,7 @@ public class PostService {
     private final ReportRepository reportRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostBookmarkRepository postBookmarkRepository;
+    private final LogService logService;
 
     @Transactional
     public ApiResponse createPost(String username, CreatePostRequest request) {
@@ -61,7 +62,10 @@ public class PostService {
             }
         }
         
-        postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+        
+        logService.logAction(username, "POST", savedPost.getPostId(), "CREATE", 
+            "새로운 게시글을 작성했습니다. 작성 내용: " + request.getContent());
 
         return ApiResponse.of(true, "게시글이 성공적으로 생성되었습니다");
     }
@@ -126,6 +130,9 @@ public class PostService {
         
         postRepository.save(post);
         
+        logService.logAction(username, "POST", postId, "UPDATE", 
+            "게시글을 수정했습니다. 게시글 ID: " + postId);
+        
         return ApiResponse.of(true, "게시글이 성공적으로 수정되었습니다");
     }
 
@@ -150,6 +157,9 @@ public class PostService {
         // 게시글 삭제 (soft delete)
         post.delete();
         postRepository.save(post);
+        
+        logService.logAction(username, "POST", postId, "DELETE", 
+            "게시글을 삭제했습니다. 게시글 ID: " + postId);
         
         return ApiResponse.of(true, "게시글이 성공적으로 삭제되었습니다");
     }
@@ -180,7 +190,10 @@ public class PostService {
         
         // 신고 생성 및 저장
         Report report = Report.createReport(post, user, request.getReason());
-        reportRepository.save(report);
+        Report savedReport = reportRepository.save(report);
+        
+        logService.logAction(username, "REPORT", savedReport.getReportId(), "CREATE", 
+            "게시글을 신고했습니다. 게시글 ID: " + postId + ", 사유: " + request.getReason());
         
         // 신고 횟수에 따른 처리 로직
         long reportCount = reportRepository.countByPostId(post.getPostId());

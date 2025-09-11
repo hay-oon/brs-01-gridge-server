@@ -28,6 +28,7 @@ public class SubscriptionService {
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final SubscriptionHistoryRepository subscriptionHistoryRepository;
     private final UserRepository userRepository;
+    private final LogService logService;
     
     private static final Long MONTHLY_AMOUNT = 9900L; // 월 구독료
     
@@ -72,6 +73,9 @@ public class SubscriptionService {
             "구독 결제 생성"
         );
         subscriptionHistoryRepository.save(subscriptionHistory);
+        
+        logService.logAction(username, "PAYMENT", paymentHistory.getPaymentHistoryId(), "CREATE", 
+            "구독 결제를 생성했습니다. 금액: " + request.getAmount() + "원");
         
         return CreateSubscriptionResponse.builder()
                 .paymentHistoryId(paymentHistory.getPaymentHistoryId())

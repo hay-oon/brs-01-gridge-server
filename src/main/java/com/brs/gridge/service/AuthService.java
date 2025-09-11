@@ -20,6 +20,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LogService logService;
 
     @Transactional
     public User signup(SignupRequest request) {
@@ -42,7 +43,12 @@ public class AuthService {
             request.getProfileImageUrl()
         );
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        
+        logService.logAction(request.getUsername(), "USER", savedUser.getUserId(), "CREATE", 
+            "새로운 사용자가 회원가입했습니다. 이메일: " + request.getEmail());
+        
+        return savedUser;
     }
 
     @Transactional
@@ -54,6 +60,9 @@ public class AuthService {
 
         user.updateLastLoginTime();
         userRepository.save(user);
+        
+        logService.logAction(request.getUsername(), "USER", user.getUserId(), "READ", 
+            "사용자가 로그인했습니다.");
 
         return user;
     }
@@ -105,6 +114,9 @@ public class AuthService {
         String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
         user.updatePassword(encodedNewPassword);
         userRepository.save(user);
+        
+        logService.logAction(username, "USER", user.getUserId(), "UPDATE", 
+            "사용자가 비밀번호를 변경했습니다.");
 
         return ResetPasswordResponse.of(true, "비밀번호가 성공적으로 변경되었습니다");
     }

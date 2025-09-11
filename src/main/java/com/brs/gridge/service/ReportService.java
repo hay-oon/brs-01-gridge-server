@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class ReportService {
 
     private final ReportRepository reportRepository;
+    private final LogService logService;
 
     @Transactional
     public PagedResponse<ReportListResponse> getReports(int page, int size) {
@@ -29,7 +30,15 @@ public class ReportService {
 
     @Transactional
     public ApiResponse deleteReport(Long reportId) {
+        if (!reportRepository.existsById(reportId)) {
+            throw new IllegalArgumentException("신고를 찾을 수 없습니다: " + reportId);
+        }
+        
         reportRepository.deleteById(reportId);
+        
+        logService.logAction("ADMIN", "REPORT", reportId, "DELETE", 
+            "관리자가 신고를 삭제했습니다. 신고 ID: " + reportId);
+        
         return ApiResponse.of(true, "신고가 성공적으로 삭제되었습니다");
     }
 }
