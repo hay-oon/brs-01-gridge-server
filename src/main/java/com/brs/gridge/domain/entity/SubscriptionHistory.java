@@ -39,13 +39,14 @@ public class SubscriptionHistory {
     @Column(name = "status", nullable = false)
     private SubscriptionStatus status;
 
-    @Column(name = "payment_history_id")
-    private Long paymentHistoryId; // 결제 히스토리와의 연관관계
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_history_id")
+    private PaymentHistory paymentHistory; // 결제 히스토리와의 연관관계
 
     @Column(name = "reason")
     private String reason; // 상태 변경 사유 (예: "정기결제", "취소", "만료")
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
     @PrePersist
@@ -53,13 +54,13 @@ public class SubscriptionHistory {
         createdAt = LocalDateTime.now();
     }
 
-    public static SubscriptionHistory createSubscriptionHistory(User user, LocalDate startDate, LocalDate endDate, SubscriptionStatus status, Long paymentHistoryId, String reason) {
+    public static SubscriptionHistory createSubscriptionHistory(User user, LocalDate startDate, LocalDate endDate, SubscriptionStatus status, PaymentHistory paymentHistory, String reason) {
         return SubscriptionHistory.builder()
                 .user(user)
                 .startDate(startDate)
                 .endDate(endDate)
                 .status(status)
-                .paymentHistoryId(paymentHistoryId)
+                .paymentHistory(paymentHistory)
                 .reason(reason)
                 .build();
     }

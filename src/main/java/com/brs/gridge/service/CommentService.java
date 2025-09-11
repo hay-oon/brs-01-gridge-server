@@ -15,8 +15,7 @@ import com.brs.gridge.repository.CommentRepository;
 import com.brs.gridge.controller.dto.CreateCommentRequest;
 import com.brs.gridge.controller.dto.CreateCommentResponse;
 import com.brs.gridge.controller.dto.UpdateCommentRequest;
-import com.brs.gridge.controller.dto.UpdateCommentResponse;
-import com.brs.gridge.controller.dto.DeleteCommentResponse;
+import com.brs.gridge.controller.dto.ApiResponse;
 import com.brs.gridge.controller.dto.PagedResponse;
 import com.brs.gridge.controller.dto.CommentListResponse;
 import com.brs.gridge.domain.vo.CommentStatus;
@@ -64,7 +63,7 @@ public class CommentService {
     }
 
     @Transactional
-    public UpdateCommentResponse updateComment(String username, Long postId, Long commentId, UpdateCommentRequest request) {
+    public ApiResponse updateComment(String username, Long postId, Long commentId, UpdateCommentRequest request) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         
@@ -86,11 +85,11 @@ public class CommentService {
         comment.updateContent(request.getContent());
         commentRepository.save(comment);
 
-        return UpdateCommentResponse.of(true, "댓글이 성공적으로 수정되었습니다");
+        return ApiResponse.of(true, "댓글이 성공적으로 수정되었습니다");
     }
 
     @Transactional
-    public DeleteCommentResponse deleteComment(String username, Long postId, Long commentId) {
+    public ApiResponse deleteComment(String username, Long postId, Long commentId) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         
@@ -112,6 +111,6 @@ public class CommentService {
         comment.softDelete();
         commentRepository.save(comment);
 
-        return DeleteCommentResponse.of(true, "댓글이 성공적으로 삭제되었습니다");
+        return ApiResponse.of(true, "댓글이 성공적으로 삭제되었습니다");
     }
 }

@@ -29,10 +29,10 @@ public class PrivacyAgreement {
     @Column(name = "version", nullable = false)
     private String version;
 
-    @Column(name = "agreed_at", nullable = false, updatable = false)
+    @Column(name = "agreed_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime agreedAt;
 
-    @Column(name = "expired_at")
+    @Column(name = "expired_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime expiredAt;
 
     public static PrivacyAgreement createAgreement(User user, String version) {

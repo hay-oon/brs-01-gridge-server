@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostListResponse {
+public class PostResponse {
     
     private Long postId;
     private String content;
@@ -26,8 +26,6 @@ public class PostListResponse {
     private LocalDateTime updatedAt;
     private UserInfo user;
     private List<AttachmentInfo> attachments;
-    
-    // TODO: 추후 상황에 따라 분리할 것   
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -38,8 +36,8 @@ public class PostListResponse {
         private FileType fileType;
     }
     
-    public static PostListResponse from(Post post) {
-        return PostListResponse.builder()
+    public static PostResponse from(Post post) {
+        return PostResponse.builder()
                 .postId(post.getPostId())
                 .content(post.getContent())
                 .status(post.getStatus())

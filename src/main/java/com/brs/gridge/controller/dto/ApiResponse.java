@@ -9,12 +9,12 @@ import lombok.Builder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdatePostResponse {
+public class ApiResponse {
     private boolean success;
     private String message;
 
-    public static UpdatePostResponse of(boolean success, String message) {
-        return UpdatePostResponse.builder()
+    public static ApiResponse of(boolean success, String message) {
+        return ApiResponse.builder()
                 .success(success)
                 .message(message)
                 .build();

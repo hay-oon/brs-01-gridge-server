@@ -13,16 +13,15 @@ import com.brs.gridge.domain.entity.Report;
 import com.brs.gridge.domain.entity.PostLike;
 import com.brs.gridge.domain.entity.PostBookmark;
 import com.brs.gridge.controller.dto.CreatePostRequest;
-import com.brs.gridge.controller.dto.CreatePostResponse;
+import com.brs.gridge.controller.dto.ApiResponse;
 import com.brs.gridge.controller.dto.UpdatePostRequest;
-import com.brs.gridge.controller.dto.UpdatePostResponse;
-import com.brs.gridge.controller.dto.DeletePostResponse;
 import com.brs.gridge.controller.dto.PagedResponse;
-import com.brs.gridge.controller.dto.PostListResponse;
+import com.brs.gridge.controller.dto.PostResponse;
 import com.brs.gridge.controller.dto.ReportPostRequest;
 import com.brs.gridge.controller.dto.ReportPostResponse;
 import com.brs.gridge.controller.dto.LikePostResponse;
 import com.brs.gridge.controller.dto.BookmarkPostResponse;
+import com.brs.gridge.controller.dto.PostSearchRequest;
 import com.brs.gridge.repository.PostRepository;
 import com.brs.gridge.repository.UserRepository;
 import com.brs.gridge.repository.ReportRepository;
@@ -49,7 +48,7 @@ public class PostService {
     private final PostBookmarkRepository postBookmarkRepository;
 
     @Transactional
-    public CreatePostResponse createPost(String username, CreatePostRequest request) {
+    public ApiResponse createPost(String username, CreatePostRequest request) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         Post post = Post.createPost(user, request);
@@ -64,33 +63,33 @@ public class PostService {
         
         postRepository.save(post);
 
-        return CreatePostResponse.of(true, "게시글이 성공적으로 생성되었습니다");
+        return ApiResponse.of(true, "게시글이 성공적으로 생성되었습니다");
     }
 
     @Transactional
-    public PagedResponse<PostListResponse> getPosts(String username, int page, int size) {
+    public PagedResponse<PostResponse> getPosts(String username, int page, int size) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
             
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findPostsByFollowerAndStatus(user.getUserId(), PostStatus.VISIBLE, pageable);
         
-        return PagedResponse.from(posts, PostListResponse::from);
+        return PagedResponse.from(posts, PostResponse::from);
     }
 
     @Transactional
-    public PagedResponse<PostListResponse> getMyPosts(String username, int page, int size) {
+    public PagedResponse<PostResponse> getMyPosts(String username, int page, int size) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
             
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findMyPosts(user.getUserId(), PostStatus.VISIBLE, pageable);
         
-        return PagedResponse.from(posts, PostListResponse::from);
+        return PagedResponse.from(posts, PostResponse::from);
     }
 
     @Transactional
-    public UpdatePostResponse updatePost(String username, Long postId, UpdatePostRequest request) {
+    public ApiResponse updatePost(String username, Long postId, UpdatePostRequest request) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         
@@ -127,11 +126,11 @@ public class PostService {
         
         postRepository.save(post);
         
-        return UpdatePostResponse.of(true, "게시글이 성공적으로 수정되었습니다");
+        return ApiResponse.of(true, "게시글이 성공적으로 수정되었습니다");
     }
 
     @Transactional
-    public DeletePostResponse deletePost(String username, Long postId) {
+    public ApiResponse deletePost(String username, Long postId) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
         
@@ -152,7 +151,7 @@ public class PostService {
         post.delete();
         postRepository.save(post);
         
-        return DeletePostResponse.of(true, "게시글이 성공적으로 삭제되었습니다");
+        return ApiResponse.of(true, "게시글이 성공적으로 삭제되었습니다");
     }
 
     // 게시글 신고 API
@@ -295,5 +294,45 @@ public class PostService {
         long bookmarkCount = postBookmarkRepository.countByPostId(postId);
         
         return BookmarkPostResponse.of(true, "북마크 상태를 조회했습니다", isBookmarked, bookmarkCount);
+    }
+
+    // 관리자 게시글 목록 조회 API
+    @Transactional(readOnly = true)
+    public PagedResponse<PostResponse> getPostsByAdmin(PostSearchRequest request, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findPostsByAdmin(
+            request.getUsername(), 
+            request.getStatus(), 
+            request.getCreatedDate(), 
+            pageable
+        );
+        
+        return PagedResponse.from(posts, PostResponse::from);
+    }
+
+    // 관리자 게시글 상세 조회 API
+    @Transactional(readOnly = true)
+    public PostResponse getPostByAdmin(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
+        
+        return PostResponse.from(post);
+    }
+
+    // 관리자 게시글 삭제 API
+    @Transactional
+    public ApiResponse deletePostByAdmin(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다: " + postId));
+        
+        // 이미 삭제된 게시글인지 확인
+        if (post.getStatus() == PostStatus.DELETED) {
+            throw new IllegalArgumentException("이미 삭제된 게시글입니다");
+        }
+        
+        post.delete(); // PostStatus.DELETED
+        postRepository.save(post);
+        
+        return ApiResponse.of(true, "게시글이 성공적으로 삭제되었습니다");
     }
 }

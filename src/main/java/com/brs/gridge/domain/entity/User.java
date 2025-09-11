@@ -61,11 +61,14 @@ public class User {
     @Column(name = "login_type", nullable = false)
     private LoginType loginType;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)  
+    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP")  
     private LocalDateTime updatedAt;
+
+    @Column(name = "last_login_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime lastLoginAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @Builder.Default
@@ -110,6 +113,16 @@ public class User {
             throw new IllegalArgumentException("새 비밀번호는 필수입니다");
         }
         this.password = newPassword;
+    }
+
+    // 마지막 로그인 시간 업데이트
+    public void updateLastLoginTime() {
+        this.lastLoginAt = LocalDateTime.now();
+    }
+
+    // 회원 상태 변경
+    public void changeStatus(UserStatus status) {
+        this.status = status;
     }
 
     @PrePersist

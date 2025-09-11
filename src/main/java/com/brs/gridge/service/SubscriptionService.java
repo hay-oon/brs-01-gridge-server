@@ -1,7 +1,6 @@
 package com.brs.gridge.service;
 
-import com.brs.gridge.controller.dto.CreateSubscriptionRequest;
-import com.brs.gridge.controller.dto.CreateSubscriptionResponse;
+import com.brs.gridge.controller.dto.*;
 import com.brs.gridge.domain.entity.*;
 import com.brs.gridge.domain.vo.PaymentStatus;
 import com.brs.gridge.domain.vo.SubscriptionStatus;
@@ -10,6 +9,9 @@ import com.brs.gridge.repository.SubscriptionHistoryRepository;
 import com.brs.gridge.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,7 +68,7 @@ public class SubscriptionService {
             startDate,
             endDate,
             SubscriptionStatus.ACTIVE,
-            paymentHistory.getPaymentHistoryId(),
+            paymentHistory,
             "구독 결제 생성"
         );
         subscriptionHistoryRepository.save(subscriptionHistory);
@@ -122,4 +124,32 @@ public class SubscriptionService {
     //         }
     //     }
     // }
+    
+    // 구독 내역 조회 (페이지네이션)
+    public PagedResponse<SubscriptionListResponse> getSubscriptionList(SubscriptionSearchRequest request, int page, int size) {
+        
+        String username = request.getUsername();
+        LocalDate startDate = request.getStartDate();
+        LocalDate endDate = request.getEndDate();
+        SubscriptionStatus status = request.getStatus();
+        
+        Pageable pageable = PageRequest.of(page, size);
+        
+        Page<SubscriptionHistory> subscriptionPage = subscriptionHistoryRepository.findSubscriptionsWithConditions(
+                username, startDate, endDate, status, pageable
+        );
+        
+        return PagedResponse.from(subscriptionPage, SubscriptionListResponse::from);
+    }
+    
+    // 구독 상세 조회
+    public SubscriptionListResponse getSubscriptionDetail(Long subscriptionHistoryId) {
+        
+        SubscriptionHistory subscription = subscriptionHistoryRepository.findByIdWithDetails(subscriptionHistoryId)
+                .orElseThrow(() -> new IllegalArgumentException("구독 내역을 찾을 수 없습니다"));
+        
+        return SubscriptionListResponse.from(subscription);
+    }
+    
+    
 }
