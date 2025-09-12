@@ -1,0 +1,72 @@
+## GitHub Actions 워크플로우
+
+name: Deploy to EC2 (Docker Hub)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      # Java 빌드를 위한 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      # Java 빌드
+      - name: Build application
+        run: ./gradlew bootJar
+
+      # Docker 이미지 빌드
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/gridge-server:${{ github.sha }} .
+
+      # Docker Hub 로그인
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Docker Hub에 이미지 푸시
+      - name: Push to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/gridge-server:${{ github.sha }}
+          docker tag ${{ secrets.DOCKER_USERNAME }}/gridge-server:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/gridge-server:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/gridge-server:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 프로젝트 디렉토리로 이동
+            cd /home/ec2-user/gridge-test-server
+
+            # 최신 코드 풀
+            git pull origin main
+
+            # Docker Hub에서 최신 이미지 풀
+            docker pull ${{ secrets.DOCKER_USERNAME }}/gridge-server:latest
+
+            # 기존 컨테이너 중지
+            docker-compose down || true
+
+            # Docker Compose로 서비스 시작 (MySQL은 로컬 이미지 사용)
+            docker-compose up -d
+
+            # 헬스체크
+            sleep 30
+            curl -f http://localhost:8080/actuator/health || exit 1
