@@ -67,9 +67,21 @@ jobs:
             # Docker Compose로 서비스 시작 (MySQL은 로컬 이미지 사용)
             docker-compose up -d
 
+            # 컨테이너 상태 확인
+            echo "컨테이너 상태 확인..."
+            docker ps -a
+
+            # 앱 로그 확인
+            echo "앱 컨테이너 로그 확인..."
+            docker logs gridge-server --tail 50
+
             # 헬스체크 (앱 시작 시간을 고려하여 대기 시간 증가)
             echo "앱 시작 대기 중..."
             sleep 60
+
+            # 컨테이너 상태 재확인
+            echo "60초 후 컨테이너 상태 확인..."
+            docker ps -a
 
             # 여러 번 시도하는 헬스체크
             for i in {1..5}; do
@@ -83,4 +95,8 @@ jobs:
             done
 
             echo "헬스체크 최종 실패"
+            echo "최종 컨테이너 상태:"
+            docker ps -a
+            echo "앱 컨테이너 로그:"
+            docker logs gridge-server --tail 100
             exit 1

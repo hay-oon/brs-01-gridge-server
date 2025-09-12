@@ -10,7 +10,7 @@ services:
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=1234
     ports:
-      - "33066:3306" # 개발용으로만 사용, 실제 운영환경에서는 주석 처리
+      - "3306:3306" # 개발용으로만 사용, 실제 운영환경에서는 주석 처리
     volumes:
       - mysql_data:/var/lib/mysql
       - ./src/main/resources/test-data.sql:/docker-entrypoint-initdb.d/init.sql
