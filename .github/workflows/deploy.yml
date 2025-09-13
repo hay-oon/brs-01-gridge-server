@@ -67,43 +67,13 @@ jobs:
             # Docker Compose로 서비스 시작 (MySQL은 로컬 이미지 사용)
             docker-compose up -d
 
-            # 컨테이너 상태 확인
-            echo "컨테이너 상태 확인..."
-            docker ps -a
-
-            # 앱 로그 확인
-            echo "앱 컨테이너 로그 확인..."
-            docker logs gridge-server --tail 50
-
-            # 헬스체크 (앱 시작 시간을 고려하여 대기 시간 증가)
+            # 헬스체크
             echo "앱 시작 대기 중..."
-            sleep 60
+            sleep 30
 
-            # 컨테이너 상태 재확인
-            echo "60초 후 컨테이너 상태 확인..."
-            docker ps -a
-
-            # 간단한 헬스체크 (포트 확인)
-            echo "포트 8080 상태 확인..."
-            if netstat -tlnp | grep :8080; then
-              echo "포트 8080이 열려있습니다!"
-              
-              # 앱이 정상적으로 시작되었는지 확인
-              if curl -s http://localhost:8080/actuator/health | grep -q "UP"; then
-                echo "헬스체크 성공! (actuator/health)"
-                exit 0
-              elif curl -s http://localhost:8080/actuator | grep -q "actuator"; then
-                echo "헬스체크 성공! (actuator)"
-                exit 0
-              elif curl -s http://localhost:8080/ | grep -q "html\|json"; then
-                echo "헬스체크 성공! (root)"
-                exit 0
-              else
-                echo "앱이 시작되었지만 응답이 없습니다. 컨테이너 상태를 확인하세요."
-                docker ps -a
-                exit 1
-              fi
+            if curl -s http://localhost:8080/actuator/health | grep -q "UP"; then
+              echo "배포 성공!"
             else
-              echo "포트 8080이 열려있지 않습니다!"
+              echo "배포 실패 - 앱이 정상적으로 시작되지 않았습니다."
               exit 1
             fi
