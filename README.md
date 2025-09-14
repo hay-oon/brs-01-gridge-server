@@ -6,7 +6,8 @@
 
 ## API 문서 확인
 
-- Swagger: [Swagger UI](http://localhost:8080/swagger-ui.html)
+- EC2 Server: [EC2 Server](http://43.201.30.237)
+- Swagger: [Swagger UI](http://43.201.30.237/swagger-ui/index.html)
 - Postman: [Postman Collection](https://.postman.co/workspace/My-Workspace~de85d44d-15c1-450d-87ea-2694673fde04/collection/40062499-a8294960-220f-438f-9912-14e5bc360a29?action=share&creator=40062499&active-environment=40062499-6cf49d97-c33e-4f36-9298-9f87ae1fdae9)
 - Notion: [Notion](https://www.notion.so/API-260d9fa672ba80349a3ac37207dd2ffb?source=copy_link)
 

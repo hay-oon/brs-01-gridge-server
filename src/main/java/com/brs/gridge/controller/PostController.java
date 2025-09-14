@@ -83,7 +83,7 @@ public class PostController {
     }
 
     // 게시글 삭제 API
-    @DeleteMapping("/post/{postId}")
+    @PatchMapping("/post/{postId}")
     public ResponseEntity<ApiResponse> deletePost(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long postId) {
